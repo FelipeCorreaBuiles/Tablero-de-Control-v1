@@ -1,0 +1,290 @@
+<html>
+  <head>
+    <!-- CSS stylesheet bootstrap
+    <link rel="stylesheet" type="text/css" href="http://getbootstrap.com/dist/css/bootstrap.min.css">-->
+	 <link rel="stylesheet" href="css/bootstrap.css">
+	<link href='https://fonts.googleapis.com/css?family=PT+Sans+Narrow:700' rel='stylesheet' type='text/css'>
+    <link href="d3.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+      body { padding-top: 70px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-family: 'PT Sans Narrow', sans-serif;
+        position: relative;
+        background: #FFFAFA;
+      }
+
+      .container {
+        width: 1300px;
+      }
+      .panel{
+        background: #FFFAFA;
+		// #EBEBEB
+      }
+
+      .col-md-6 {
+        width: 50%;
+      }
+
+
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      path.slice{
+        stroke-width:2px;
+      }
+
+      polyline{
+        opacity: .3;
+        stroke: black;
+        stroke-width: 2px;
+        fill: none;
+      }
+
+
+	.item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: black;
+    border-color: #337ab7;
+		}
+
+      </style>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="http://d3js.org/d3.v2.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src = "gauge.js"></script>
+    <script type="text/javascript" src = "pieChart.js"></script>
+    <script type="text/javascript" src = "bar.js"></script>
+    <script type="text/javascript" src = "nvtooltip.js"></script>
+    <script type="text/javascript" src = "d3legend.js"></script>
+    <script type="text/javascript" src = "d3line.js"></script>
+    <script type="text/javascript" src = "d3linewithlegend.js"></script>
+    <script type="text/javascript" src = "linechart.js"></script>
+    <script type="text/javascript">
+
+        function drawTableChart(){
+          //create the data Table
+          var dataT = jsonTable.responseJSON["Posts Clasificados"], dataLength = dataT.length
+          var dataTable  = new google.visualization.DataTable();
+          dataTable.addColumn('date', 'Fecha');
+          dataTable.addColumn('string', 'Post');
+          dataTable.addColumn('string', 'Sentimiento');
+
+
+          var formatter_short = new google.visualization.DateFormat({formatType: 'short'});
+
+          //add rows to data table
+          for(var i=0; i < dataLength; i++){
+            var date = new Date(dataT[i]["Fecha_publicacion"]);
+            var likes = dataT[i]["likes"];
+            var comments = dataT[i]["comments"];
+            var feel = dataT[i]["Sentimiento"];
+            var post = dataT[i]["post"];
+            dataTable.addRow([date, post, feel]);
+          }
+
+          formatter_short.format(dataTable, 0);
+
+          //create the dashboard
+          //
+          var dashboard = new google.visualization.Dashboard(document.getElementById("dashboard_div"));
+          var chart = new google.visualization.ChartWrapper({
+            'chartType' : 'Table',
+            'containerId': 'table_div'
+          });
+
+          var control = new google.visualization.ControlWrapper({
+            'controlType': 'DateRangeFilter',
+            'containerId': 'control_div',
+            'options': {
+              'filterColumnIndex': 0,
+              'ui': { 'format': { 'pattern': 'yy-MM-dd' },
+                      'label':'Rango Fechas' }
+            }
+          });
+
+          var control2 = new google.visualization.ControlWrapper({
+            'controlType': 'CategoryFilter',
+            'containerId': 'control2_div',
+            'options': {
+              'filterColumnIndex': 2,
+              'ui': {
+                'allowTyping': false,
+                'allowMultiple': true,
+                'selectedValuesLayout': 'belowStacked',
+                'labelStacking' : 'horizontal'
+              }
+            }
+          });
+
+          //draw table
+          dashboard.bind([control,control2], chart);
+          dashboard.draw(dataTable);
+        }
+
+
+        $(document).ready(function(){
+          var spreadsheetID = "10kOJq-7KQ5UrRKLeLJ_0zx5_HuZqu1SSFBA8_yJk_Fw";
+          var url ="https://script.google.com/macros/s/AKfycbxOLElujQcy1-ZUer1KgEvK16gkTLUqYftApjNCM_IRTL3HSuDk/exec?id="+spreadsheetID+"&sheet=Posts%20Clasificados";
+
+          jsonTable = $.getJSON(url,function(data){
+            return data;
+          });
+
+          jsonTable.complete(drawTableChart);
+        });
+    </script>
+  </head>
+  <body>
+
+    <!-- barra de navegacion usada como titulo -->
+    <nav class="navbar navbar-fixed-top navbar-inverse">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">ACTIVIDAD FINAL</a>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Tablero de Control</a></li>
+        </ul>
+      </div><!-- /.nav-collapse -->
+    </div><!-- /.container -->
+    </nav><!-- /.navbar -->
+
+    <div class="container">
+      <div class=row>
+        <div class="col-md-12" style="border-bottom:2px solid;margin-botton:5px;">
+          <!-- board heading -->
+            <div class="row">
+            <div class="col-md-2"><h4>Empresa: <small>XXXXXtelefonia</small></h4></div>
+            <div class="col-md-2"><h4>Likes en facebook: <small>3341</small></h4></div>
+            <div class="col-md-2"><h4>Usuario twitter: <small>@XXtele</small></h4></div>
+            <div class="col-md-2"><h4>Tweets: <small>2567</small></h4></div>
+            <div class="col-md-2"><h4>Seguidores Twitter: <small>1038</small></h4></div>
+            <div class="col-md-2"><h4>Me gusta: <small>125</small></h4></div>
+            </div>
+
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px;">
+
+      <div class="list-group col-md-1">
+  <a href="#" class="list-group-item active">Men&uacute; principal</a>
+  <a href="#" class="list-group-item">Menu2</a>
+  <a href="#" class="list-group-item">Menu3</a>
+  <a href="#" class="list-group-item">Menu4</a>
+  <a href="#" class="list-group-item">Menu5</a>
+</div>
+        <div class="col-md-6">
+          <div class="row" id="listaDeplegable">
+            <div class="form-group">
+			<div class="col-md-3">
+            <label for="mySelect"> Intervalo de tiempo:</label>
+			</div>
+			<div class="col-md-8">
+            <select id="mySelect" class="form-control" onchange="cambiarGrafico()">
+				<option  value="horas">horas</option>
+			 <option  value="dias">dias</option>
+              <option  value="semanas">semanas</option>
+			  <option  value="meses">meses</option>
+            </select>
+			</div>
+          </div>
+          </div>
+		  <!--
+          <div class="panel">
+            <h4 class="panel-heading " id="barHeading" >Positivos vs Negativos</h4>
+          </div>
+		  -->
+          <div id="bar_div"></div>
+          <p id="demo"></p>
+
+
+          <hr>
+		  <!--
+          <div class="panel">
+
+            <h4 class="panel-heading">Historial</h4>
+          </div>
+		  -->
+          <div id="line-chart">
+            <svg></svg>
+          </div>
+
+        </div>
+        <div class="col-md-4" style="border-left:1px solid;">
+		<div class="row">
+		 <div class="form-group">
+		 <div class="col-md-2">
+            <label for="selInterval">tiempo:</label>
+			</div>
+			<div class="col-md-5">
+            <select  id="selInterval" class="form-control">
+              <option value="1">Ultimos 7 d&iacute;as</option>
+              <option value="2">Ultimo mes</option>
+			  <option value="3">Ultimo trimestre</option>
+			  <option value="4">Ultimo semestre</option>
+            </select>
+			</div>
+			<div class="col-md-5">
+				    <div class="btn-group">
+					<button type="button" class="btn btn-default btn-sm" id="acceptance">Aceptaci&oacute;n</button>
+					<button type="button" class="btn btn-default btn-sm" id="popularity">Popularidad</button>
+					</div>
+
+
+			</div>
+          </div>
+		   </div>
+          <div class="panel">
+            <h4 class="panel-heading" id="gaugeHeading">Ultimos 7 d&iacute;as</h4>
+          </div>
+          <div id="chart_div"></div>
+           <div class="row">
+		  <div class="panel">
+		  <div class="col-md-8">
+            <h4 class="panel-heading" id="pieHeading">Pie-Chart Aceptacion</h4>
+			</div>
+<!--
+			          <div class="col-md-3 ">
+					  <button class="btn btn-default centered " id="acceptance">Aceptaci&oacute;n</button>
+
+          </div>
+		  	          <div class="col-md-1">
+					<button class="btn btn-default" id="popularity">Popularidad</button>
+          </div>
+
+
+			<div class="col-md-5">
+					<div class=" btn-group-xs">
+					<button type="button" class="btn btn-default " id="acceptance">Aceptaci&oacute;n</button>
+					<button type="button" class="btn btn-default" id="popularity">Popularidad</button>
+			</div>
+			</div>
+		 -->
+
+
+		  </div>
+		  </div>
+          <div id="pieChart" style="height:220px"></div>
+
+          <hr>
+          <div class="panel">
+            <h4 class="panel-heading">Comentarios</h4>
+            <div id="dashboard_div">
+              <div id="control_div"></div>
+              <div id="control2_div"></div>
+              <div id="table_div"></div>
+            </div>
+          </div>
+       <!--   <div class="panel">
+            <h3 class="panel-heading">Tweets</h3>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
